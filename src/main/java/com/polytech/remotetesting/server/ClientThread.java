@@ -14,7 +14,6 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -60,17 +59,19 @@ public class ClientThread extends Thread {
                                 sendTasks();
                                 break;
                             case 4:
-                                int taskNumber = Integer.parseInt(message.getResourceRecords().get(0).getDataString().trim());
+                                int taskNumber = Integer.parseInt(
+                                        message.getResourceRecords().get(0).getDataString().trim()
+                                ) - 1;
                                 if (taskNumber >= tasks.size()) {
                                     writeMessageWithRCode(message.getHeader().getMode(), (byte) 2);
                                 } else {
-                                    System.out.println("ok start");
                                     startTesting(taskNumber);
                                     sendResult();
                                 }
                                 break;
                             default:
                                 writeMessageWithRCode(message.getHeader().getMode(), (byte) 4);
+                                break;
                         }
                     } else {
                         isAdded = addUser(message);
@@ -151,7 +152,7 @@ public class ClientThread extends Thread {
                 rightAnswersCount++;
             }
         }
-        int correctAnswers =(int) (rightAnswersCount * 100.0 / task.getAnswers().size());
+        int correctAnswers = (int) ((rightAnswersCount / task.getAnswers().size()) * 100.0);
         results.put(login, String.valueOf(correctAnswers));
     }
 
@@ -192,7 +193,7 @@ public class ClientThread extends Thread {
             boolean isCorrectAnswer = true;
             for (ResourceRecord answerRR : message.getResourceRecords()) {
                 String answer = answerRR.getDataString().trim();
-                if (Integer.parseInt(answer) >= answersNumber || Integer.parseInt(answer) < 0) {
+                if (Integer.parseInt(answer) > answersNumber || Integer.parseInt(answer) < 1) {
                     writeMessageWithRCode(message.getHeader().getMode(), (byte) 3);
                     isCorrectAnswer = false;
                     break;
