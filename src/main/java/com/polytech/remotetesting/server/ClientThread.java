@@ -152,7 +152,7 @@ public class ClientThread extends Thread {
                 rightAnswersCount++;
             }
         }
-        int correctAnswers = (int) ((rightAnswersCount / task.getAnswers().size()) * 100.0);
+        int correctAnswers = (int) ((rightAnswersCount / (double) task.getAnswers().size()) * 100);
         results.put(login, String.valueOf(correctAnswers));
     }
 
