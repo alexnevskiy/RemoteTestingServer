@@ -32,7 +32,6 @@ public class Server extends Thread {
             }
         } catch (IOException exception) {
             closeServer();
-            System.out.println("Сервер выключен.");
         }
     }
 
@@ -52,5 +51,6 @@ public class Server extends Thread {
             exception.printStackTrace();
         }
         interrupt();
+        System.out.println("Сервер выключен.");
     }
 }
