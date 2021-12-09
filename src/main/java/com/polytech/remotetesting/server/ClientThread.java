@@ -14,6 +14,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,18 +52,23 @@ public class ClientThread extends Thread {
                         switch (message.getHeader().getMode()) {
                             case 1:
                                 closeClientThread();
+                                break;
                             case 2:
                                 sendResult();
+                                break;
                             case 3:
                                 sendTasks();
+                                break;
                             case 4:
-                                int taskNumber = Integer.parseInt(message.getResourceRecords().get(0).getDataString());
+                                int taskNumber = Integer.parseInt(message.getResourceRecords().get(0).getDataString().trim());
                                 if (taskNumber >= tasks.size()) {
                                     writeMessageWithRCode(message.getHeader().getMode(), (byte) 2);
                                 } else {
+                                    System.out.println("ok start");
                                     startTesting(taskNumber);
                                     sendResult();
                                 }
+                                break;
                             default:
                                 writeMessageWithRCode(message.getHeader().getMode(), (byte) 4);
                         }
@@ -104,7 +110,7 @@ public class ClientThread extends Thread {
     }
 
     private void sendResult() throws IOException {
-        byte[] result = results.getOrDefault(login, "0").getBytes(StandardCharsets.UTF_8);
+        byte[] result = results.getOrDefault(login, "Нет результата").getBytes(StandardCharsets.UTF_8);
         RemoteTestingMessage messageToUser = new RemoteTestingMessage();
         messageToUser.getHeader().setCs(true);
         messageToUser.getHeader().setMode((byte) 2);
@@ -145,7 +151,7 @@ public class ClientThread extends Thread {
                 rightAnswersCount++;
             }
         }
-        int correctAnswers = (int) Math.ceil(rightAnswersCount / (double) task.getAnswers().size());
+        int correctAnswers =(int) (rightAnswersCount * 100.0 / task.getAnswers().size());
         results.put(login, String.valueOf(correctAnswers));
     }
 
@@ -185,7 +191,7 @@ public class ClientThread extends Thread {
             }
             boolean isCorrectAnswer = true;
             for (ResourceRecord answerRR : message.getResourceRecords()) {
-                String answer = answerRR.getDataString();
+                String answer = answerRR.getDataString().trim();
                 if (Integer.parseInt(answer) >= answersNumber || Integer.parseInt(answer) < 0) {
                     writeMessageWithRCode(message.getHeader().getMode(), (byte) 3);
                     isCorrectAnswer = false;
