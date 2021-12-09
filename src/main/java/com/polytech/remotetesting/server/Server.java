@@ -30,8 +30,10 @@ public class Server extends Thread {
                 clientThread.start();
                 clientThreadList.add(clientThread);
             }
+            closeServer();
         } catch (IOException exception) {
             closeServer();
+            System.out.println("Сервер выключен.");
         }
     }
 
@@ -41,7 +43,7 @@ public class Server extends Thread {
             try {
                 clientThread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Клиент отключён.");
             }
         }
 
@@ -51,6 +53,5 @@ public class Server extends Thread {
             exception.printStackTrace();
         }
         interrupt();
-        System.out.println("Сервер выключен.");
     }
 }
