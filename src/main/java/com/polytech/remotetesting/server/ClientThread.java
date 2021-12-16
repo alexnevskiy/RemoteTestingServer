@@ -106,6 +106,7 @@ public class ClientThread extends Thread {
             }
         } else {
             users.put(login, password);
+            System.out.println("Подключился клиент: " + login);
         }
         writeMessage(messageToUser);
         return true;
@@ -184,6 +185,7 @@ public class ClientThread extends Thread {
             RemoteTestingMessage message = readMessage();
             if (message.getHeader().getMode() != 5) {
                 if (message.getHeader().getMode() == 1) {
+                    System.out.println("Клиент " + login + " отключился");
                     closeClientThread();
                     return new ArrayList<>();
                 } else {
@@ -252,6 +254,17 @@ public class ClientThread extends Thread {
             outputStream.close();
             socket.close();
             clientThreadList.remove(this);
+            interrupt();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void closeClientThreadWithoutRemoving() {
+        try {
+            inputStream.close();
+            outputStream.close();
+            socket.close();
             interrupt();
         } catch (IOException exception) {
             exception.printStackTrace();

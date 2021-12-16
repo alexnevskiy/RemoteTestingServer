@@ -39,12 +39,7 @@ public class Server extends Thread {
 
     public void closeServer() {
         for (ClientThread clientThread : clientThreadList) {
-            clientThread.closeClientThread();
-            try {
-                clientThread.join();
-            } catch (InterruptedException e) {
-                System.out.println("Клиент отключён.");
-            }
+            clientThread.closeClientThreadWithoutRemoving();
         }
 
         try {
