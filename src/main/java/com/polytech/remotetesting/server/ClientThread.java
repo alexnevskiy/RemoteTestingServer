@@ -14,6 +14,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -206,8 +207,9 @@ public class ClientThread extends Thread {
     }
 
     private boolean compareAnswers(List<String> rightAnswers, List<String> answersFromUser) {
-        rightAnswers.removeAll(answersFromUser);
-        return rightAnswers.size() == 0;
+        Collections.sort(rightAnswers);
+        Collections.sort(answersFromUser);
+        return rightAnswers.equals(answersFromUser);
     }
 
     private boolean hasMessage() throws IOException {
